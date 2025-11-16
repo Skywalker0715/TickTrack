@@ -38,9 +38,9 @@ class AuthController extends Controller
                 'message' => 'Terjadi Kesalahan saat login',
                 'error' => $e->getMessage()
             ], 500);
-         
+
         }
-    } 
+    }
 
 
     public function me()

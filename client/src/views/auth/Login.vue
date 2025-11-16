@@ -1,116 +1,114 @@
-<template>
-  <div class="container mx-auto px-4 h-full">
-    <div class="flex content-center items-center justify-center h-full">
-      <div class="w-full lg:w-4/12 px-4">
-        <div
-          class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-200 border-0"
-        >
-          <div class="rounded-t mb-0 px-6 py-6">
-            <div class="text-center mb-3">
-              <h6 class="text-blueGray-500 text-sm font-bold">
-                Sign in with
-              </h6>
-            </div>
-            <div class="btn-wrapper text-center">
-              <button
-                class="bg-white active:bg-blueGray-50 text-blueGray-700 font-normal px-4 py-2 rounded outline-none focus:outline-none mr-2 mb-1 uppercase shadow hover:shadow-md inline-flex items-center font-bold text-xs ease-linear transition-all duration-150"
-                type="button"
-              >
-                <img alt="..." class="w-5 mr-1" :src="github" />
-                Github
-              </button>
-              <button
-                class="bg-white active:bg-blueGray-50 text-blueGray-700 font-normal px-4 py-2 rounded outline-none focus:outline-none mr-1 mb-1 uppercase shadow hover:shadow-md inline-flex items-center font-bold text-xs ease-linear transition-all duration-150"
-                type="button"
-              >
-                <img alt="..." class="w-5 mr-1" :src="google" />
-                Google
-              </button>
-            </div>
-            <hr class="mt-6 border-b-1 border-blueGray-300" />
-          </div>
-          <div class="flex-auto px-4 lg:px-10 py-10 pt-0">
-            <div class="text-blueGray-400 text-center mb-3 font-bold">
-              <small>Or sign in with credentials</small>
-            </div>
-            <form>
-              <div class="relative w-full mb-3">
-                <label
-                  class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                  htmlFor="grid-password"
-                >
-                  Email
-                </label>
-                <input
-                  type="email"
-                  class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  placeholder="Email"
-                />
-              </div>
+<script setup>
+import { useAuthStore } from '@/stores/auth'
+import { storeToRefs } from 'pinia'
+import { ref } from 'vue'
 
-              <div class="relative w-full mb-3">
-                <label
-                  class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                  htmlFor="grid-password"
-                >
-                  Password
-                </label>
-                <input
-                  type="password"
-                  class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  placeholder="Password"
-                />
-              </div>
-              <div>
-                <label class="inline-flex items-center cursor-pointer">
-                  <input
-                    id="customCheckLogin"
-                    type="checkbox"
-                    class="form-checkbox border-0 rounded text-blueGray-700 ml-1 w-5 h-5 ease-linear transition-all duration-150"
-                  />
-                  <span class="ml-2 text-sm font-semibold text-blueGray-600">
-                    Remember me
-                  </span>
-                </label>
-              </div>
+const authStore = useAuthStore()
+const { loading, error } = storeToRefs(authStore)
+const { login } = authStore
 
-              <div class="text-center mt-6">
-                <button
-                  class="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
-                  type="button"
-                >
-                  Sign In
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-        <div class="flex flex-wrap mt-6 relative">
-          <div class="w-1/2">
-            <a href="javascript:void(0)" class="text-blueGray-200">
-              <small>Forgot password?</small>
-            </a>
-          </div>
-          <div class="w-1/2 text-right">
-            <router-link to="/auth/register" class="text-blueGray-200">
-              <small>Create new account</small>
-            </router-link>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-<script>
-import github from "@/assets/img/github.svg";
-import google from "@/assets/img/google.svg";
+// TODO: Create form ref with login fields
+// Hint: You'll need email and password
+const form = ref({
+    email: null,
+    password: null
+})
 
-export default {
-  data() {
-    return {
-      github,
-      google,
-    };
-  },
-};
+// TODO: Implement handleSubmit function
+// Hint: This should call the login function from auth store
+// and handle any errors
+const handleSubmit = async () => {
+    await login(form.value)
+
+    if (error.value === 'Unauthorized') {
+        form.value.password = null
+        alert('Email atau password salah')
+    }
+}
+
+// TODO: Implement togglePassword function
+// Hint: This should toggle password visibility
+const togglePassword = () => {
+    // Your code here
+}
 </script>
+
+<template>
+    <form class="space-y-6" @submit.prevent="handleSubmit">
+        <!-- Email -->
+        <div>
+            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+            <div class="mt-1 relative">
+                <!-- TODO: Add v-model binding for email -->
+                <input v-model="form.email" type="email" id="email" name="email" required
+                    class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    placeholder="nama@perusahaan.com">
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <i data-feather="mail" class="w-4 h-4 text-gray-400"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Password -->
+        <div>
+            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+            <div class="mt-1 relative">
+                <!-- TODO: Add v-model binding for password -->
+                <input v-model="form.password" type="password" id="password" name="password" required
+                    class="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    placeholder="••••••••">
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                    <!-- TODO: Add click handler for password toggle -->
+                    <button type="button" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                        <i data-feather="eye" class="w-4 h-4" id="password-toggle"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Remember Me & Forgot Password -->
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                <input type="checkbox" id="remember" name="remember"
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                <label for="remember" class="ml-2 block text-sm text-gray-700">Ingat saya</label>
+            </div>
+            <a href="#" class="text-sm text-blue-600 hover:text-blue-800">Lupa password?</a>
+        </div>
+
+        <!-- Submit Button -->
+        <div>
+            <!-- TODO: Add loading state to button -->
+            <button type="submit"
+                class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <span v-if="!loading">
+                    Masuk
+                </span>
+                <span v-else>
+                    Loading...
+                </span>
+            </button>
+        </div>
+    </form>
+
+    <!-- Divider -->
+    <div class="mt-6">
+        <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-gray-200"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+                <span class="px-2 bg-white text-gray-500">Atau</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Link -->
+    <div class="mt-6 text-center">
+        <p class="text-sm text-gray-600">
+            Belum punya akun?
+            <RouterLink :to="{ name: 'register' }" class="font-medium text-blue-600 hover:text-blue-800">Daftar
+                sekarang</RouterLink>
+        </p>
+    </div>
+</template>
